@@ -24,5 +24,3 @@ urlpatterns = [
     path('store/', include('store.store_urls')),
     path('order/', include('order.order_urls')),
 ]
-
-# admin.site.site_header = 'vania'
