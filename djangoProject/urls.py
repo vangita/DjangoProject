@@ -18,6 +18,8 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path , include
+from django.conf.urls.static import static
+from djangoProject import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,4 +27,5 @@ urlpatterns = [
     path('order/', include('order.order_urls')),
 ]
 
-# admin.site.site_header = 'vania'
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
