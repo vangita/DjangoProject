@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ category.name }} Products</title>
+</head>
+<body>
+<h1>{{ category.name }} - პროდუქტების ჩამონათვალი</h1>
+
+<ul>
+    {% for product in products %}
+        <li>
+            <a href="{% url 'product_detail' product.id %}">{{ product.name }}</a> -
+            ჯამური ღირებულება: {{ product.total_value|floatformat:2 }}
+        </li>
+    {% endfor %}
+</ul>
+
+<h2>სტატისტიკა:</h2>
+<ul>
+    <li>ყველაზე ძვირიანი პროდუქტი: {{ stats.highest_price|floatformat:2 }}</li>
+    <li>ყველაზე იაფიანი პროდუქტი: {{ stats.lowest_price|floatformat:2 }}</li>
+    <li>პროდუქტის საშუალო ფასი: {{ stats.average_price|floatformat:2 }}</li>
+    <li>კატეგორიაში არსებული ყველა პროდუქტის ჯამური ღირებულება: {{ stats.total_stock_value|floatformat:2 }}</li>
+</ul>
+
+</body>
+</html>
