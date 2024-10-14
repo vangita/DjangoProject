@@ -1,16 +1,60 @@
-from itertools import product
-
-from django.core.cache import cache
-from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-
+from django.shortcuts import render, get_object_or_404
+from django.db.models import Sum, Min, Max, Avg, F,Count, Q ,  DecimalField
 from store.models import Category, Product
+from django.db.models.functions import Cast
 
 
 # Create your views here.
 def index(request):
+     return HttpResponse("Hello, world.")
 
-    return HttpResponse("Hello, world.")
+def category_list_view(request):
+    categories = Category.objects.filter(parent=None)
+    for category in categories:
+        category.product_count = Product.objects.filter(
+            Q(category=category) | Q(category__parent=category)
+        ).distinct().count()
+    context = {
+        'categories': categories,
+    }
+    return render(request, 'categories.html', context)
+
+
+
+def category_products_view(request, category_id):
+    category = get_object_or_404(Category, id=category_id, is_active=True)
+    products = Product.objects.filter(
+        Q(category=category) | Q(category__parent=category)
+    ).distinct()
+
+    products_with_values = products.annotate(
+        total_value=F('price') * F('quantity')
+    )
+
+    stats = products_with_values.aggregate(
+        highest_price=Max('price'),
+        lowest_price=Min('price'),
+        average_price=Avg('price'),
+        total_stock_value=Sum(Cast(F('total_value'), output_field=DecimalField()))
+    )
+
+    context = {
+        'category': category,
+        'products': products_with_values,
+        'stats': stats,
+    }
+    return render(request, 'category_products.html', context)
+
+def product_detail_view(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+
+    context = {
+        'product': product,
+    }
+    return render(request, 'product_detail.html', context)
+
+
 
 def about(request):
 
