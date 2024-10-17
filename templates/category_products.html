@@ -8,13 +8,29 @@
 <h1>{{ category.name }} - პროდუქტების ჩამონათვალი</h1>
 
 <ul>
-    {% for product in products %}
+    {% for product in page_obj %}
         <li>
             <a href="{% url 'product_detail' product.slug %}">{{ product.name }}</a> -
             ჯამური ღირებულება: {{ product.total_value|floatformat:2 }}
         </li>
     {% endfor %}
 </ul>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Next</a>
+        {% endif %}
+    </span>
+</div>
 
 <h2>სტატისტიკა:</h2>
 <ul>
@@ -26,3 +42,4 @@
 
 </body>
 </html>
+

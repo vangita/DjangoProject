@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Sum, Min, Max, Avg, F,Count, Q ,  DecimalField
@@ -26,6 +27,10 @@ def category_products_view(request, category_id):
         Q(category=category) | Q(category__parent=category)
     ).distinct()
 
+    paginator = Paginator(products, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     products_with_values = products.annotate(
         total_value=F('price') * F('quantity')
     )
@@ -39,6 +44,7 @@ def category_products_view(request, category_id):
         'category': category,
         'products': products_with_values,
         'stats': stats,
+        'page_obj': page_obj,
     }
     return render(request, 'category_products.html', context)
 
