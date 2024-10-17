@@ -20,8 +20,6 @@ def category_list_view(request):
     }
     return render(request, 'categories.html', context)
 
-
-
 def category_products_view(request, category_id):
     category = get_object_or_404(Category, id=category_id, is_active=True)
     products = Product.objects.filter(
@@ -31,14 +29,12 @@ def category_products_view(request, category_id):
     products_with_values = products.annotate(
         total_value=F('price') * F('quantity')
     )
-
     stats = products_with_values.aggregate(
         highest_price=Max('price'),
         lowest_price=Min('price'),
         average_price=Avg('price'),
         total_stock_value=Sum(Cast(F('total_value'), output_field=DecimalField()))
     )
-
     context = {
         'category': category,
         'products': products_with_values,
@@ -46,8 +42,8 @@ def category_products_view(request, category_id):
     }
     return render(request, 'category_products.html', context)
 
-def product_detail_view(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
+def product_detail_view(request, product_slug):
+    product = get_object_or_404(Product, slug=product_slug)
 
     context = {
         'product': product,
